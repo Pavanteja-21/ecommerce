@@ -1,5 +1,6 @@
 package com.pavan.ecommerce.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -7,6 +8,16 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+
+@JsonPropertyOrder({
+        "id",
+        "name",
+        "description",
+        "price",
+        "quantity",
+        "image"
+})
 
 @Data
 public class ProductDto {

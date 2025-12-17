@@ -61,12 +61,6 @@
             <artifactId>mapstruct</artifactId>
             <version>1.6.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>1.6.3</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -128,6 +122,11 @@
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
