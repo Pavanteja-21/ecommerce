@@ -1,7 +1,9 @@
 package com.pavan.ecommerce.controller;
 
 import com.pavan.ecommerce.dto.ChangePasswordRequest;
+import com.pavan.ecommerce.dto.EmailConfirmationRequest;
 import com.pavan.ecommerce.dto.LoginRequest;
+import com.pavan.ecommerce.exception.ResourceNotFoundException;
 import com.pavan.ecommerce.model.User;
 import com.pavan.ecommerce.service.JwtService;
 import com.pavan.ecommerce.service.UserService;
@@ -9,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,6 +50,18 @@ public class AuthController {
         String email = authentication.getName();
         userService.changePassword(email, request);
         return ResponseEntity.ok().body("Password Changed");
+    }
+
+    @PostMapping("/confirm-email")
+    public ResponseEntity<?> confirmEmail(@RequestBody EmailConfirmationRequest request) {
+        try {
+            userService.confirmEmail(request.getEmail(), request.getConfirmationCode());
+            return ResponseEntity.ok().body("Email confirmed successfully");
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body("Invalid confirmation code");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
