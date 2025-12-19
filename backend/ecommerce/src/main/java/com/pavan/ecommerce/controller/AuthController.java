@@ -5,6 +5,7 @@ import com.pavan.ecommerce.dto.EmailConfirmationRequest;
 import com.pavan.ecommerce.dto.LoginRequest;
 import com.pavan.ecommerce.exception.ResourceNotFoundException;
 import com.pavan.ecommerce.model.User;
+import com.pavan.ecommerce.service.CartService;
 import com.pavan.ecommerce.service.JwtService;
 import com.pavan.ecommerce.service.UserService;
 import jakarta.validation.Valid;
@@ -16,10 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,6 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtService jwtService;
+    private final CartService cartService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
@@ -41,7 +40,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+        User registeredUser = userService.registerUser(user);
+        cartService.createCartForUser(registeredUser.getId());
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/change-password")
@@ -63,5 +64,45 @@ public class AuthController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/user/role")
+    public ResponseEntity<String> getUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+
+        if (user != null) {
+            String role = String.valueOf(user.getRole());
+            return ResponseEntity.ok(role);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+
+    @GetMapping("/user/confirmation")
+    public ResponseEntity<String> getUserConfirmation() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+
+        if (user != null) {
+            String confirmed = String.valueOf(user.getEmailConfirmation());
+            return ResponseEntity.ok(confirmed);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<String> getUserEmailById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user.getEmail());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
 
 }

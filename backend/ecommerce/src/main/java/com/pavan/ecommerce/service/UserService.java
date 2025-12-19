@@ -61,4 +61,9 @@ public class UserService {
         int code = 100000 + random.nextInt(900000);
         return String.valueOf(code);
     }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
 }
